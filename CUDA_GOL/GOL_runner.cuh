@@ -9,13 +9,14 @@
 class GOL {
 	public:
 		GOL(int width, int height, bool* data);
-		bool step();
+		bool init();
+		bool step(bool show);
 		~GOL();
 	private:
-		int* width, d_width;
-		int* height, d_height;
-		unsigned char** vertPart, d_vertPart;
-		unsigned char** horzPart, d_horzPart;
-		bool* board, d_board;
+		int width; int* d_width;
+		int height; int * d_height;
+		bool* board, d_board, d_boardNew;
+		int size, numBlockVert, numBlockHoriz;
+		bool initialized = false;
 };
 #endif

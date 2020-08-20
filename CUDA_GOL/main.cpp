@@ -19,6 +19,7 @@ bool fileRead(std::string fileName, int& width, int& height, int& numFills, bool
 			index = (y * width) + x;
 			data[index] = true;
 		}
+		reader.close();
 		return true;
 	}
 	else return false;
