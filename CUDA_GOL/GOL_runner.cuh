@@ -10,7 +10,7 @@ class GOL {
 	public:
 		GOL(int width, int height, bool* data);
 		bool init();
-		bool step(bool show);
+		bool step(bool show, bool* output);
 		~GOL();
 	private:
 		int width; int* d_width;

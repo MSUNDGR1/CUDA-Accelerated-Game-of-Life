@@ -9,9 +9,9 @@
 GOL::GOL(int width, int height, bool* data) {
 	this->width = width;
 	this->height = height;
-	int size = sizeof(bool) * width * height;
-	this->board = (bool *)malloc(size);
-	cudaMemcpy(this->board, data, size, cudaMemcpyHostToHost);
+	size = sizeof(bool) * width * height;
+	board = (bool *)malloc(size);
+	cudaMemcpy(board, data, size, cudaMemcpyHostToHost);
 }
 
 bool GOL::init() {
@@ -19,6 +19,9 @@ bool GOL::init() {
 	cudaMalloc((void **)&d_board, size);
 	cudaMalloc((void**)&d_boardNew, size);
 
+	size = sizeof(int);
+	cudaMalloc((void**)&d_width, size); cudaMalloc((void**)&d_height, size);
+	
 	cudaMemcpy(&d_board, &board, size, cudaMemcpyHostToDevice);
 
 	numBlockVert = height / threadHeight;
