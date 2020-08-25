@@ -4,6 +4,39 @@
 #define threadHeight 16
 
 
+__device__ void horizCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+	int horizIndex, vertIndex, realIndex, count;
+	vertIndex = (*y);
+	if ((*x) + 1 == (*width)) { horizIndex = 0; }
+	else { horizIndex = (*width) + 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+	if ((*x) == 0) { horizIndex = (*width) - 1; }
+	else { horizIndex = (*x) - 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+	*numFill = count;
+}
+
+
+__device__ void vertCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+	int horizIndex, vertIndex, realIndex, count;
+	horizIndex = (*x);
+	if ((*y) + 1 == (*height)) { vertIndex = 0; }
+	else { vertIndex = (*height) + 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+	if ((*y) == 0) { vertIndex = (*height) - 1; }
+	else { vertIndex = (*y) - 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+	*numFill = count;
+}
+
+__device__ void cornerCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+
+}
+
 __global__ void stepper(bool* board, bool* newBoard, int* width, int* height) {
 	int horizIndex = blockIdx.x * blockDim.x + threadIdx.x;
 	int vertIndex = blockIdx.y * blockDim.y + threadIdx.y;
