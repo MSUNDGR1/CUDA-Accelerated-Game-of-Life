@@ -4,50 +4,82 @@
 #define threadHeight 16
 
 
-__device__ void horizCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+__forceinline __device__ int horizCheck(bool* board, int* width, int* height, int* x, int* y) {
 	int horizIndex, vertIndex, realIndex, count;
-	vertIndex = (*y);
+	vertIndex = (*y); count = 0;
+
 	if ((*x) + 1 == (*width)) { horizIndex = 0; }
 	else { horizIndex = (*width) + 1; }
 	realIndex = (*width) * vertIndex + horizIndex;
 	if (board[realIndex]) count++;
+
 	if ((*x) == 0) { horizIndex = (*width) - 1; }
 	else { horizIndex = (*x) - 1; }
 	realIndex = (*width) * vertIndex + horizIndex;
 	if (board[realIndex]) count++;
-	*numFill = count;
+
+	return count;
 }
 
 
-__device__ void vertCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+__forceinline __device__ int vertCheck( bool* board, int* width, int* height, int* x, int* y) {
 	int horizIndex, vertIndex, realIndex, count;
-	horizIndex = (*x);
+	horizIndex = (*x); count = 0;
+
 	if ((*y) + 1 == (*height)) { vertIndex = 0; }
 	else { vertIndex = (*height) + 1; }
 	realIndex = (*width) * vertIndex + horizIndex;
 	if (board[realIndex]) count++;
+
 	if ((*y) == 0) { vertIndex = (*height) - 1; }
 	else { vertIndex = (*y) - 1; }
 	realIndex = (*width) * vertIndex + horizIndex;
 	if (board[realIndex]) count++;
-	*numFill = count;
+
+	return count;
+
 }
 
-__device__ void cornerCheck(int* numFill, bool* board, int* width, int* height, int* x, int* y) {
+__forceinline __device__ int cornerCheck(bool* board, int* width, int* height, int* x, int* y) {
+	int horizIndex, vertIndex, realIndex, count;
+	count = 0;
 
+	if ((*y) + 1 == (*height)) { vertIndex = 0; }
+	else { vertIndex = (*height) + 1; }
+	if ((*x) + 1 == (*width)) { horizIndex = 0; }
+	else { horizIndex = (*width) + 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+
+	if ((*x) == 0) { horizIndex = (*width) - 1; }
+	else { horizIndex = (*x) - 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+
+	if ((*y) == 0) { vertIndex = (*height) - 1; }
+	else { vertIndex = (*y) - 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+
+	if ((*x) + 1 == (*width)) { horizIndex = 0; }
+	else { horizIndex = (*width) + 1; }
+	realIndex = (*width) * vertIndex + horizIndex;
+	if (board[realIndex]) count++;
+
+	return count;
 }
 
 __global__ void stepper(bool* board, bool* newBoard, int* width, int* height) {
 	int horizIndex = blockIdx.x * blockDim.x + threadIdx.x;
 	int vertIndex = blockIdx.y * blockDim.y + threadIdx.y;
+
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+
 	if (horizIndex < *width && vertIndex < *height) {
-		int neighborCount = 0;
-		int checkInd = horizIndex + 1;
-		checkInd %= *width;
-		checkInd = vertIndex * *width + checkInd;
-		if (board[checkInd]) neighborCount++;
-		checkInd = horizIndex - 1;
-		checkInd += *width; checkInd %= *width;
+		int neighborCount = horizCheck(board, width, height, &x, &y);
+		neighborCount += vertCheck(board, width, height, &x, &y);
+		neighborCount += cornerCheck(board, width, height, &x, &y);
 
 	}
 }
