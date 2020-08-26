@@ -80,7 +80,11 @@ __global__ void stepper(bool* board, bool* newBoard, int* width, int* height) {
 		int neighborCount = horizCheck(board, width, height, &x, &y);
 		neighborCount += vertCheck(board, width, height, &x, &y);
 		neighborCount += cornerCheck(board, width, height, &x, &y);
-
+		int realIndex = vertIndex * (*width) + horizIndex;
+		bool cellState = board[realIndex];
+		if (cellState && neighborCount < 2) { newBoard[realIndex] = false; }
+		else if (cellState && neighborCount > 3) { newBoard[realIndex] = true; }
+		else if (!cellState && neighborCount == 3) { newBoard[realIndex] = true; }
 	}
 }
 
@@ -89,13 +93,13 @@ GOL::GOL(int width, int height, bool* data) {
 	this->height = height;
 	size = sizeof(bool) * width * height;
 	board = (bool *)malloc(size);
+	//cudaMemcpy(board, data, size, cudaMemcpyHostToHost);
 	cudaMemcpy(board, data, size, cudaMemcpyHostToHost);
 }
 
-bool GOL::init() {
-	size = sizeof(bool) * width * height;
+void GOL::init() {
 	cudaMalloc((void **)&d_board, size);
-	cudaMalloc((void**)&d_boardNew, size);
+	cudaMalloc((void **)&d_boardNew, size);
 
 	size = sizeof(int);
 	cudaMalloc((void**)&d_width, size); cudaMalloc((void**)&d_height, size);
@@ -106,12 +110,17 @@ bool GOL::init() {
 	if (height % threadHeight > 0) numBlockVert++;
 	numBlockHoriz = width / threadWidth;
 	if (height % threadWidth > 0) numBlockHoriz++;
-
-	initialized = true;
 }
 
-bool GOL::step(bool show, bool* output) {
+void GOL::step() {
 	dim3 dimGrid(numBlockHoriz, numBlockVert);
 	dim3 dimBlock(threadWidth, threadHeight);
+	stepper << <dimGrid, dimBlock >> > (&d_board, &d_boardNew, d_width, d_height);
+	cudaMemcpy(&d_board, &d_boardNew, size, cudaMemcpyDeviceToDevice);
+	cudaMemcpy(board, &d_board, size, cudaMemcpyDeviceToHost);
+}
 
+GOL::~GOL() {
+	cudaFree(&d_board); cudaFree(&d_boardNew);
+	cudaFree(&d_width); cudaFree(&d_height);
 }
