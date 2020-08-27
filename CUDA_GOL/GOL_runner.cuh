@@ -10,7 +10,7 @@ class GOL {
 	public:
 		GOL(int width, int height, bool* data);
 		void init();
-		void step();
+		bool step();
 		int width; int* d_width;
 		int height; int* d_height;
 		bool* board, d_board, d_boardNew;

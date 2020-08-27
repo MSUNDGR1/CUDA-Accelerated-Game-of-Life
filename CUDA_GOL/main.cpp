@@ -63,7 +63,7 @@ void iterate(int numsteps, GOL& board) {
 	std::string output;
 	int index;
 	for (int i = 0; i < numsteps; i++) {
-		system("CLS");
+		//system("CLS");
 		
 		for (int h = 0; h < board.height; h++) {
 			output = "";
@@ -74,7 +74,8 @@ void iterate(int numsteps, GOL& board) {
 			}
 			std::cout << output << std::endl;
 		}
-		Sleep(250);
 		board.step();
+		Sleep(250);
+		
 	}
 }
