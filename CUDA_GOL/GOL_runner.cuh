@@ -13,7 +13,7 @@ class GOL {
 		bool step();
 		int width; int* d_width;
 		int height; int* d_height;
-		bool* board, d_board, d_boardNew;
+		bool* board, * d_board, * d_boardNew;
 		~GOL();
 	private:
 		
