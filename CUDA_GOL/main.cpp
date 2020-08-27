@@ -1,27 +1,38 @@
 #include <iostream>
+#include <stdlib.h>
 #include <fstream>
-//#include <Windows.h>
+#include <Windows.h>
 #include "GOL_runner.cuh"
 
 
 bool* fileRead(std::string fileName, int& width, int& height, int& numFills) {
-	std::ifstream reader;
-	reader.open(fileName);
-	if (reader.is_open()) {
-		reader >> width;
-		reader >> height;
-		reader >> numFills;
+	std::ifstream file(fileName.c_str(), std::ios::in);
+	
+	if (file.is_open()) {
+		char intBuff[4];
+		file >> width;
+		file >> height;
+		file >> numFills;
+		
+		
 		int x, y;
 		int readCount = 0;
 		int index;
 		int boolNum = height * width;
+		std::cout << "Set up reads, datSize: " << boolNum << std::endl;
 		bool* data = new bool[boolNum];
+		std::cout << "Data alloc" << std::endl;
 		while (readCount < numFills) {
-			reader >> x; reader >> y;
+			file >> x; file >> y;
+			//file.read(intBuff, 4);
+			//x = *((int*)intBuff);
+			//file.read(intBuff, 4);
+			//y = *((int*)intBuff);
 			index = (y * width) + x;
 			data[index] = true;
+			readCount++;
 		}
-		reader.close();
+		file.close();
 		return data;
 	}
 	else return nullptr;
@@ -53,8 +64,9 @@ void iterate(int numsteps, GOL& board) {
 	int index;
 	for (int i = 0; i < numsteps; i++) {
 		system("CLS");
-		output = "";
+		
 		for (int h = 0; h < board.height; h++) {
+			output = "";
 			for (int w = 0; w < board.width; w++) {
 				index = board.width * h + w;
 				if (board.board[index] == true) output += "*";
@@ -62,6 +74,7 @@ void iterate(int numsteps, GOL& board) {
 			}
 			std::cout << output << std::endl;
 		}
+		Sleep(250);
 		board.step();
 	}
 }

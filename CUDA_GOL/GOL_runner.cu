@@ -4,7 +4,7 @@
 #define threadHeight 16
 
 
-__forceinline __device__ int horizCheck(bool* board, int* width, int* height, int* x, int* y) {
+ __device__ int horizCheck(bool* board, int* width, int* height, int* x, int* y) {
 	int horizIndex, vertIndex, realIndex, count;
 	vertIndex = (*y); count = 0;
 
@@ -22,7 +22,7 @@ __forceinline __device__ int horizCheck(bool* board, int* width, int* height, in
 }
 
 
-__forceinline __device__ int vertCheck( bool* board, int* width, int* height, int* x, int* y) {
+__device__ int vertCheck( bool* board, int* width, int* height, int* x, int* y) {
 	int horizIndex, vertIndex, realIndex, count;
 	horizIndex = (*x); count = 0;
 
@@ -40,7 +40,7 @@ __forceinline __device__ int vertCheck( bool* board, int* width, int* height, in
 
 }
 
-__forceinline __device__ int cornerCheck(bool* board, int* width, int* height, int* x, int* y) {
+__device__ int cornerCheck(bool* board, int* width, int* height, int* x, int* y) {
 	int horizIndex, vertIndex, realIndex, count;
 	count = 0;
 
@@ -70,17 +70,15 @@ __forceinline __device__ int cornerCheck(bool* board, int* width, int* height, i
 }
 
 __global__ void stepper(bool* board, bool* newBoard, int* width, int* height) {
-	int horizIndex = blockIdx.x * blockDim.x + threadIdx.x;
-	int vertIndex = blockIdx.y * blockDim.y + threadIdx.y;
 
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (horizIndex < *width && vertIndex < *height) {
+	if (x < *width && y < *height) {
 		int neighborCount = horizCheck(board, width, height, &x, &y);
 		neighborCount += vertCheck(board, width, height, &x, &y);
 		neighborCount += cornerCheck(board, width, height, &x, &y);
-		int realIndex = vertIndex * (*width) + horizIndex;
+		int realIndex = y * (*width) + x;
 		bool cellState = board[realIndex];
 		if (cellState && neighborCount < 2) { newBoard[realIndex] = false; }
 		else if (cellState && neighborCount > 3) { newBoard[realIndex] = true; }
