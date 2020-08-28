@@ -20,7 +20,7 @@ bool* fileRead(std::string fileName, int& width, int& height, int& numFills) {
 		int index;
 		int boolNum = height * width;
 		std::cout << "Set up reads, datSize: " << boolNum << std::endl;
-		bool* data = new bool[boolNum];
+		bool* data = new bool[boolNum]();
 		std::cout << "Data alloc" << std::endl;
 		while (readCount < numFills) {
 			file >> x; file >> y;
@@ -63,13 +63,13 @@ void iterate(int numsteps, GOL& board) {
 	std::string output;
 	int index;
 	for (int i = 0; i < numsteps; i++) {
-		//system("CLS");
-		
+		system("CLS");
+		//if (board.board[198])std::cout << "Filled at center, cpp" << std::endl;
 		for (int h = 0; h < board.height; h++) {
 			output = "";
 			for (int w = 0; w < board.width; w++) {
 				index = board.width * h + w;
-				if (board.board[index] == true) output += "*";
+				if (board.board[index] == true) { output += "*"; }
 				else output += "_";
 			}
 			std::cout << output << std::endl;
