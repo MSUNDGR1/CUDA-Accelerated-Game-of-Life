@@ -42,7 +42,7 @@ bool* fileRead(std::string fileName, int& width, int& height, int& numFills) {
 void iterate(int numsteps, GOL& board);
 
 int main() {
-	std::string fileName = "test.txt";
+	std::string fileName = "glider.txt";
 	int width, height, numFills;
 	bool* data = fileRead(fileName, width, height, numFills);
 	std::cout << "File Read" << std::endl;
@@ -75,7 +75,7 @@ void iterate(int numsteps, GOL& board) {
 			std::cout << output << std::endl;
 		}
 		board.step();
-		Sleep(250);
+		Sleep(80);
 		
 	}
 }
